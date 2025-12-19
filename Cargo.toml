@@ -1,6 +1,12 @@
 [workspace]
 members = [
-  "packages/*",
+  "packages/dchain-test-tube",
+  "packages/test-tube",
   "test_contracts/*",
 ]
 resolver = "2"
+
+[workspace.dependencies]
+dchain-sdk-proto = { path = "../protocol-proto-rs/cosmos-sdk-proto" }
+cosmrs = {version = "0.22.0", features = ["cosmwasm"]}
+cosmwasm-std = "3.0.2"

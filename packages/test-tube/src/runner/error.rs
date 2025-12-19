@@ -29,6 +29,9 @@ pub enum RunnerError {
 
     #[error("{0}")]
     TendermintRpc(#[from] TendermintRpcError),
+
+    #[error("Overflow error: {0}")]
+    Overflow(#[from] cosmwasm_std::OverflowError),
 }
 
 impl PartialEq for RunnerError {

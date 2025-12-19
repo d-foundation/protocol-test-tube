@@ -1,23 +1,23 @@
-use cosmrs::proto::{
-    cosmos::bank::v1beta1::MsgSend,
+use cosmwasm_std::{BankMsg, Coin, WasmMsg};
+use dchain_sdk_proto::{
+    cosmos::{bank::v1beta1::MsgSend, base::v1beta1::Coin as ProtoCoin},
     cosmwasm::wasm::v1::{
         MsgClearAdmin, MsgExecuteContract, MsgInstantiateContract, MsgMigrateContract,
         MsgUpdateAdmin,
     },
 };
-use cosmwasm_std::{BankMsg, Coin, WasmMsg};
 use prost::Message;
 
 use crate::{Account, EncodeError, RunnerError, SigningAccount};
 
-pub fn coins_to_proto(coins: &[Coin]) -> Vec<cosmrs::proto::cosmos::base::v1beta1::Coin> {
+pub fn coins_to_proto(coins: &[Coin]) -> Vec<ProtoCoin> {
     let mut coins = coins.to_vec();
     coins.sort_by(|a, b| a.denom.cmp(&b.denom));
     coins
         .iter()
-        .map(|c| cosmrs::proto::cosmos::base::v1beta1::Coin {
+        .map(|c| ProtoCoin {
             denom: c.denom.parse().unwrap(),
-            amount: format!("{}", c.amount.u128()),
+            amount: format!("{}", c.amount),
         })
         .collect()
 }

@@ -52,7 +52,7 @@ impl BaseApp {
     /// Increase the time of the blockchain by the given number of seconds.
     pub fn increase_time(&self, seconds: u64) {
         unsafe {
-            IncreaseTime(self.id, seconds.try_into().unwrap());
+            IncreaseTime(self.id, seconds);
         }
     }
 
@@ -254,12 +254,22 @@ impl BaseApp {
                 gas_adjustment,
             } => {
                 let gas_info = self.simulate_tx_bytes(tx_bytes)?;
-                let gas_limit = ((gas_info.gas_used as f64) * (gas_adjustment)).ceil() as u64;
+
+                // Use scaled integer arithmetic to avoid f64 precision loss
+                // Scale gas_adjustment by 1_000_000 for precision
+                const SCALE: u64 = 1_000_000;
+                let scaled_adjustment = (gas_adjustment * SCALE as f64) as u64;
+                let scaled_gas_limit = gas_info.gas_used * scaled_adjustment;
+
+                // Ceiling division: (a + b - 1) / b
+                let gas_limit = scaled_gas_limit.div_ceil(SCALE);
+
+                // Calculate fee amount using integer arithmetic
+                let fee_amount = gas_price.amount.checked_mul(gas_limit.into())?;
 
                 let amount = cosmrs::Coin {
                     denom: self.fee_denom.parse().unwrap(),
-                    amount: (((gas_limit as f64) * (gas_price.amount.u128() as f64)).ceil() as u64)
-                        .into(),
+                    amount: fee_amount.to_string().parse().unwrap(),
                 };
 
                 Ok(Fee::from_amount_and_gas(amount, gas_limit))
@@ -341,7 +351,7 @@ impl Drop for BaseApp {
     }
 }
 
-impl<'a> Runner<'a> for BaseApp {
+impl Runner<'_> for BaseApp {
     fn execute_multiple<M, R>(
         &self,
         msgs: &[(M, &str)],
@@ -398,7 +408,7 @@ impl<'a> Runner<'a> for BaseApp {
             let res = ResponseFinalizeBlock::decode(res.as_slice())
                 .map_err(DecodeError::ProtoDecodeError)?;
 
-            let tx_result = res.tx_results.get(0).cloned().expect("tx_result not found");
+            let tx_result = res.tx_results.first().expect("tx_result not found");
 
             if !tx_result.codespace.is_empty() {
                 return Err(RunnerError::ExecuteError {

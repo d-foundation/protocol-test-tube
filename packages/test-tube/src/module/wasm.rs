@@ -1,10 +1,13 @@
 #![cfg(feature = "wasm")]
 
 use cosmwasm_std::Coin;
-use osmosis_std::types::cosmwasm::wasm::v1::{
-    AccessConfig, MsgExecuteContract, MsgExecuteContractResponse, MsgInstantiateContract,
-    MsgInstantiateContractResponse, MsgStoreCode, MsgStoreCodeResponse,
-    QuerySmartContractStateRequest, QuerySmartContractStateResponse,
+use dchain_sdk_proto::{
+    cosmos::base::v1beta1::Coin as ProtoCoin,
+    cosmwasm::wasm::v1::{
+        AccessConfig, MsgExecuteContract, MsgExecuteContractResponse, MsgInstantiateContract,
+        MsgInstantiateContractResponse, MsgStoreCode, MsgStoreCodeResponse,
+        QuerySmartContractStateRequest, QuerySmartContractStateResponse,
+    },
 };
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -67,9 +70,9 @@ where
                 msg: serde_json::to_vec(msg).map_err(EncodeError::JsonEncodeError)?,
                 funds: funds
                     .iter()
-                    .map(|c| osmosis_std::types::cosmos::base::v1beta1::Coin {
+                    .map(|c| ProtoCoin {
                         denom: c.denom.parse().unwrap(),
-                        amount: format!("{}", c.amount.u128()),
+                        amount: format!("{}", c.amount),
                     })
                     .collect(),
             },
@@ -94,9 +97,9 @@ where
                 msg: serde_json::to_vec(msg).map_err(EncodeError::JsonEncodeError)?,
                 funds: funds
                     .iter()
-                    .map(|c| osmosis_std::types::cosmos::base::v1beta1::Coin {
+                    .map(|c| ProtoCoin {
                         denom: c.denom.parse().unwrap(),
-                        amount: format!("{}", c.amount.u128()),
+                        amount: format!("{}", c.amount),
                     })
                     .collect(),
                 contract: contract.to_owned(),
@@ -109,7 +112,7 @@ where
     pub fn query<M, Res>(&self, contract: &str, msg: &M) -> RunnerResult<Res>
     where
         M: ?Sized + Serialize,
-        Res: ?Sized + DeserializeOwned,
+        Res: DeserializeOwned,
     {
         let res = self
             .runner

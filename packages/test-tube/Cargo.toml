@@ -10,9 +10,9 @@ version = "0.8.0"
 
 [dependencies]
 base64 = "0.22.1"
-cosmrs = {version = "0.20.0", features = ["cosmwasm", "rpc"]}
-cosmwasm-std = {version = "2.1", features = ["stargate"]}
-osmosis-std = {version = "0.26.0", optional = true}
+cosmrs = { workspace = true, features = ["cosmwasm", "rpc"]}
+cosmwasm-std = { workspace = true, features = ["stargate", "cosmwasm_2_0", "cosmwasm_3_0"]}
+dchain-sdk-proto = { workspace = true }
 prost = "0.13.3"
 serde = "1.0.144"
 serde_json = "1.0.85"
@@ -28,5 +28,5 @@ default = []
 module-wrappers = ["bank", "wasm"]
 wasm-sudo = []
 
-bank = ["osmosis-std"]
-wasm = ["osmosis-std"]
+bank = []
+wasm = []
