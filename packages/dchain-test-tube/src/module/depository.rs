@@ -26,6 +26,6 @@ where
     }
 
     fn_query! {
-        pub get_global_note_by_isin ["/dchain.depository.v1.Query/GetGlobalNoteByIsin"]: QueryGetGlobalNoteByIsinRequest => QueryGetGlobalNoteByIsinResponse
+        pub get_global_note_by_isin ["/d.depository.v1.Query/GetGlobalNoteByIsin"]: QueryGetGlobalNoteByIsinRequest => QueryGetGlobalNoteByIsinResponse
     }
 }

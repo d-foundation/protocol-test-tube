@@ -30,14 +30,14 @@ mod tests {
     fn test_execute_cosmos_msgs() {
         let app = DchainTestApp::new();
         let signer = app
-            .init_account(&[Coin::new(10000000000u128, "udt")])
+            .init_account(&[Coin::new(100000000000u128, "udt")])
             .unwrap();
 
         let bank = Bank::new(&app);
 
         // BankMsg::Send
         let to = app.init_account(&[]).unwrap();
-        let coin = Coin::new(100u128, "untrn");
+        let coin = Coin::new(100u128, "udt");
         let send_msg = CosmosMsg::Bank(BankMsg::Send {
             to_address: to.address(),
             amount: vec![coin],
@@ -47,22 +47,24 @@ mod tests {
         let balance = bank
             .query_balance(&QueryBalanceRequest {
                 address: to.address(),
-                denom: "untrn".to_string(),
+                denom: "udt".to_string(),
             })
             .unwrap()
             .balance;
         assert_eq!(balance.clone().unwrap().amount, "100".to_string());
-        assert_eq!(balance.unwrap().denom, "untrn".to_string());
+        assert_eq!(balance.unwrap().denom, "udt".to_string());
 
         // WasmMsg, first upload a contract
         let wasm = Wasm::new(&app);
         let wasm_byte_code = std::fs::read("./test_artifacts/cw1_whitelist.wasm").unwrap();
+
+        let existing_codes = wasm.query_stored_codes().unwrap().code_infos;
         let code_id = wasm
             .store_code(&wasm_byte_code, None, &signer)
             .unwrap()
             .data
             .code_id;
-        assert_eq!(code_id, 1);
+        assert_eq!(code_id, existing_codes.len() as u64 + 1);
 
         // Wasm::Instantiate
         let instantiate_msg: CosmosMsg = CosmosMsg::Wasm(WasmMsg::Instantiate {

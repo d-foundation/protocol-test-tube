@@ -336,7 +336,7 @@ mod tests {
 
         let notarisation_fee_rate = app
             .query::<GetNotarisationFeeRateRequest, GetNotarisationFeeRateResponse>(
-                "/dchain.notary.v1.Query/GetNotarisationFeeRate",
+                "/d.notary.v1.Query/GetNotarisationFeeRate",
                 &GetNotarisationFeeRateRequest {},
             )
             .unwrap()
@@ -351,22 +351,22 @@ mod tests {
 
         let app = DchainTestApp::default();
         let accs = app
-            .init_accounts(
-                &[Coin::new(1_000_000_000_000u128, "udt")],
-                2,
-            )
+            .init_accounts(&[Coin::new(1_000_000_000_000u128, "udt")], 2)
             .unwrap();
         let admin = &accs[0];
         let new_admin = &accs[1];
 
         let wasm = Wasm::new(&app);
         let wasm_byte_code = std::fs::read("./test_artifacts/cw1_whitelist.wasm").unwrap();
+
+        let existing_codes = wasm.query_stored_codes().unwrap().code_infos;
+
         let code_id = wasm
             .store_code(&wasm_byte_code, None, admin)
             .unwrap()
             .data
             .code_id;
-        assert_eq!(code_id, 1);
+        assert_eq!(code_id, existing_codes.len() as u64 + 1);
 
         // initialize admins and check if the state is correct
         let init_admins = vec![admin.address()];
@@ -464,7 +464,7 @@ mod tests {
         assert_eq!(
             err,
             RunnerError::ExecuteError {
-                msg: "out of gas in location: txSize; gasWanted: 100000, gasUsed: 1876896: out of gas".to_string()
+                msg: "out of gas in location: txSize; gasWanted: 100000, gasUsed: 1871761: out of gas".to_string()
             }
         );
     }
@@ -476,9 +476,7 @@ mod tests {
         let wasm = Wasm::new(&app);
 
         let wasm_byte_code = std::fs::read("./test_artifacts/simple_sudo.wasm").unwrap();
-        let alice = app
-            .init_account(&coins(1_000_000_000_000, "udt"))
-            .unwrap();
+        let alice = app.init_account(&coins(1_000_000_000_000, "udt")).unwrap();
 
         let code_id = wasm
             .store_code(&wasm_byte_code, None, &alice)

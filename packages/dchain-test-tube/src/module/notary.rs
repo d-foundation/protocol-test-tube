@@ -44,10 +44,10 @@ where
     }
 
     fn_query! {
-        pub get_notarised_asset ["/dchain.notary.v1.Query/GetNotarisedAsset"]: GetNotarisedAssetRequest => GetNotarisedAssetResponse
+        pub get_notarised_asset ["/d.notary.v1.Query/GetNotarisedAsset"]: GetNotarisedAssetRequest => GetNotarisedAssetResponse
     }
 
     fn_query! {
-        pub get_notary_info_by_id ["/dchain.notary.v1.Query/GetNotaryInfoById"]: GetNotaryInfoByIdRequest => GetNotaryInfoByIdResponse
+        pub get_notary_info_by_id ["/d.notary.v1.Query/GetNotaryInfoById"]: GetNotaryInfoByIdRequest => GetNotaryInfoByIdResponse
     }
 }

@@ -8,6 +8,7 @@ use dchain_sdk_proto::{
         MsgInstantiateContractResponse, MsgStoreCode, MsgStoreCodeResponse,
         QuerySmartContractStateRequest, QuerySmartContractStateResponse,
     },
+    cosmwasm::wasm::v1::{QueryCodesRequest, QueryCodesResponse},
 };
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -127,5 +128,12 @@ where
         serde_json::from_slice(&res.data)
             .map_err(DecodeError::JsonDecodeError)
             .map_err(RunnerError::DecodeError)
+    }
+
+    pub fn query_stored_codes(&self) -> RunnerResult<QueryCodesResponse> {
+        self.runner.query::<QueryCodesRequest, QueryCodesResponse>(
+            "/cosmwasm.wasm.v1.Query/Codes",
+            &QueryCodesRequest { pagination: None },
+        )
     }
 }
