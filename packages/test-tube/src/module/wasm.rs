@@ -125,8 +125,6 @@ where
                 },
             )?;
 
-        println!("Received raw query response data: {:?}", res.data);
-
         serde_json::from_slice(&res.data)
             .map_err(DecodeError::JsonDecodeError)
             .map_err(RunnerError::DecodeError)

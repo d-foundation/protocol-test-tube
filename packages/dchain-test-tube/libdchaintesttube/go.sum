@@ -839,8 +839,8 @@ github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7Do
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/d-foundation/cosmos-sdk v0.53.4-dchain-v3.0.20251218160049-01564570c5fb h1:F3SzsI/m0ETyjEGhKchWIytoEiNflN7X9VZS4wwdov8=
 github.com/d-foundation/cosmos-sdk v0.53.4-dchain-v3.0.20251218160049-01564570c5fb/go.mod h1:840se0UBOtPXaVwGKvcEmX0T/AqrqECT63UaSqSueIU=
-github.com/d-foundation/protocol v0.8.2-0.20251217160624-5be5e5e27a28 h1:rpSQ1Z/5HzlZfe+kDQDFvRh7cniLCHksAOMxMeH7zgw=
-github.com/d-foundation/protocol v0.8.2-0.20251217160624-5be5e5e27a28/go.mod h1:8jFUL6nN9O9t9E+4s7WYHa5WsQiM2+efBOehIMC5rRM=
+github.com/d-foundation/protocol v0.8.2-0.20251219151843-1b6831efe836 h1:45H/CeaZnMrQvpHwSQT5xbNFzfh5hQuYTDCfERsEGTI=
+github.com/d-foundation/protocol v0.8.2-0.20251219151843-1b6831efe836/go.mod h1:yC4rb8/79CdmaziSBmbYJq05tgG/8ZwJWRsxaKCDSUs=
 github.com/d-foundation/wasmd v0.61.4-dchain h1:85SGiVafLeDb2bxzY9hV8mzPfs8CCuFJ+qCkdtzqbM8=
 github.com/d-foundation/wasmd v0.61.4-dchain/go.mod h1:nRS0sxWUXeeFBAw5Jo7FXU4YwnkaqdLUq38HrDjjWn0=
 github.com/danieljoos/wincred v1.2.1 h1:dl9cBrupW8+r5250DYkYxocLeZ1Y4vB1kxgtjxw8GQs=

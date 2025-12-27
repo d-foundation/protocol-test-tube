@@ -5,7 +5,6 @@ go 1.23.8
 replace (
 	github.com/CosmWasm/wasmd => github.com/d-foundation/wasmd v0.61.4-dchain
 	github.com/cosmos/cosmos-sdk => github.com/d-foundation/cosmos-sdk v0.53.4-dchain-v3.0.20251218160049-01564570c5fb
-	github.com/d-foundation/protocol => github.com/d-foundation/protocol v0.8.2-0.20251217160624-5be5e5e27a28
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.0
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
@@ -20,7 +19,7 @@ require (
 	github.com/cosmos/cosmos-db v1.1.3
 	github.com/cosmos/cosmos-sdk v0.53.4
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/d-foundation/protocol v0.8.2
+	github.com/d-foundation/protocol v0.8.2-0.20251219151843-1b6831efe836
 	github.com/pkg/errors v0.9.1
 )
 
