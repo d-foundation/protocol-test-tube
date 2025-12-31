@@ -212,6 +212,9 @@ extern "C" {
     pub fn InitTestEnv() -> GoUint64;
 }
 extern "C" {
+    pub fn InitTestEnvWithPlatformAdmin(platformAdmin: GoString) -> GoUint64;
+}
+extern "C" {
     pub fn CleanUp(envId: GoUint64);
 }
 extern "C" {

@@ -1,12 +1,16 @@
 #![cfg(feature = "wasm")]
 
+use cosmrs::proto::cosmwasm::wasm::v1::{
+    QueryContractsByCodeRequest, QueryContractsByCodeResponse,
+};
 use cosmwasm_std::Coin;
 use dchain_sdk_proto::{
     cosmos::base::v1beta1::Coin as ProtoCoin,
     cosmwasm::wasm::v1::{
         AccessConfig, MsgExecuteContract, MsgExecuteContractResponse, MsgInstantiateContract,
         MsgInstantiateContractResponse, MsgStoreCode, MsgStoreCodeResponse,
-        QuerySmartContractStateRequest, QuerySmartContractStateResponse,
+        QueryContractInfoRequest, QueryContractInfoResponse, QuerySmartContractStateRequest,
+        QuerySmartContractStateResponse,
     },
     cosmwasm::wasm::v1::{QueryCodesRequest, QueryCodesResponse},
 };
@@ -135,5 +139,32 @@ where
             "/cosmwasm.wasm.v1.Query/Codes",
             &QueryCodesRequest { pagination: None },
         )
+    }
+
+    pub fn query_contracts_by_code(
+        &self,
+        code_id: u64,
+    ) -> RunnerResult<QueryContractsByCodeResponse> {
+        self.runner
+            .query::<QueryContractsByCodeRequest, QueryContractsByCodeResponse>(
+                "/cosmwasm.wasm.v1.Query/ContractsByCode",
+                &QueryContractsByCodeRequest {
+                    code_id,
+                    pagination: None,
+                },
+            )
+    }
+
+    pub fn query_contract_info(
+        &self,
+        contract_address: &str,
+    ) -> RunnerResult<QueryContractInfoResponse> {
+        self.runner
+            .query::<QueryContractInfoRequest, QueryContractInfoResponse>(
+                "/cosmwasm.wasm.v1.Query/ContractInfo",
+                &QueryContractInfoRequest {
+                    address: contract_address.to_string(),
+                },
+            )
     }
 }

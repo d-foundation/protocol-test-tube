@@ -12,7 +12,7 @@ use crate::account::{Account, FeeSetting, SigningAccount};
 use crate::bindings::{
     AccountNumber, AccountSequence, CleanUp, Commit, FinalizeBlock, GetBlockHeight, GetBlockTime,
     GetParamSet, GetValidatorAddress, GetValidatorPrivateKey, IncreaseTime, InitAccount,
-    InitTestEnv, Query, SetParamSet, Simulate,
+    InitTestEnv, InitTestEnvWithPlatformAdmin, Query, SetParamSet, Simulate,
 };
 use crate::redefine_as_go_string;
 use crate::runner::error::{DecodeError, EncodeError, RunnerError};
@@ -40,6 +40,24 @@ impl BaseApp {
         default_gas_adjustment: f64,
     ) -> Self {
         let id = unsafe { InitTestEnv() };
+        BaseApp {
+            id,
+            fee_denom: fee_denom.to_string(),
+            chain_id: chain_id.to_string(),
+            address_prefix: address_prefix.to_string(),
+            default_gas_adjustment,
+        }
+    }
+
+    pub fn new_with_platform_admin(
+        fee_denom: &str,
+        chain_id: &str,
+        address_prefix: &str,
+        default_gas_adjustment: f64,
+        platform_admin: &str,
+    ) -> Self {
+        redefine_as_go_string!(platform_admin);
+        let id = unsafe { InitTestEnvWithPlatformAdmin(platform_admin) };
         BaseApp {
             id,
             fee_denom: fee_denom.to_string(),
