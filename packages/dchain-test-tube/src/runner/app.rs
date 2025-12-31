@@ -11,6 +11,7 @@ const FEE_DENOM: &str = "udt";
 const DCHAIN_ADDRESS_PREFIX: &str = "dchain";
 const CHAIN_ID: &str = "dchain-1";
 const DEFAULT_GAS_ADJUSTMENT: f64 = 1.5;
+const TEST_PLATFORM_ADMIN: &str = "dchain1zxn04jdhpt9krp6x8tzldv97nu2c6ed5yvrk00";
 
 #[derive(Debug, PartialEq)]
 pub struct DchainTestApp {
@@ -19,7 +20,7 @@ pub struct DchainTestApp {
 
 impl Default for DchainTestApp {
     fn default() -> Self {
-        DchainTestApp::new()
+        DchainTestApp::new_with_platform_admin(TEST_PLATFORM_ADMIN)
     }
 }
 
@@ -31,6 +32,18 @@ impl DchainTestApp {
                 CHAIN_ID,
                 DCHAIN_ADDRESS_PREFIX,
                 DEFAULT_GAS_ADJUSTMENT,
+            ),
+        }
+    }
+
+    pub fn new_with_platform_admin(platform_admin: &str) -> Self {
+        Self {
+            inner: BaseApp::new_with_platform_admin(
+                FEE_DENOM,
+                CHAIN_ID,
+                DCHAIN_ADDRESS_PREFIX,
+                DEFAULT_GAS_ADJUSTMENT,
+                platform_admin,
             ),
         }
     }
@@ -246,7 +259,9 @@ impl<'a> Runner<'a> for DchainTestApp {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use dchain_sdk_proto::cosmos::bank::v1beta1::QueryAllBalancesRequest;
+    use dchain_sdk_proto::dchain::depository::v1::{QueryGetParamsRequest, QueryGetParamsResponse};
     use dchain_sdk_proto::dchain::notary::v1::{
         GetNotarisationFeeRateRequest, GetNotarisationFeeRateResponse, MsgRegisterNotaryInfo,
         MsgRegisterNotaryInfoResponse,
@@ -334,6 +349,17 @@ mod tests {
     fn test_query() {
         let app = DchainTestApp::default();
 
+        let depository_params = app
+            .query::<QueryGetParamsRequest, QueryGetParamsResponse>(
+                "/d.depository.v1.Query/GetParams",
+                &QueryGetParamsRequest {},
+            )
+            .unwrap()
+            .params
+            .unwrap();
+
+        assert_eq!(depository_params.platform_admin, TEST_PLATFORM_ADMIN);
+
         let notarisation_fee_rate = app
             .query::<GetNotarisationFeeRateRequest, GetNotarisationFeeRateResponse>(
                 "/d.notary.v1.Query/GetNotarisationFeeRate",
@@ -343,6 +369,44 @@ mod tests {
             .rate;
 
         assert!(!notarisation_fee_rate.is_empty());
+    }
+
+    #[test]
+    fn test_currency_conversion_rate_query() {
+        use dchain_sdk_proto::dchain::notary::v1::{
+            GetCurrencyConversionRateRequest, GetCurrencyConversionRateResponse,
+        };
+
+        // Try with platform admin to ensure full genesis initialization
+        let app = DchainTestApp::new();
+
+        // Query EUR conversion rate (should be 1.0 based on genesis)
+        let eur_rate = app
+            .query::<GetCurrencyConversionRateRequest, GetCurrencyConversionRateResponse>(
+                "/d.notary.v1.Query/GetCurrencyConversionRate",
+                &GetCurrencyConversionRateRequest {
+                    currency: "EUR".to_string(),
+                },
+            )
+            .unwrap()
+            .rate;
+
+        assert!(!eur_rate.is_empty());
+        println!("EUR conversion rate: {}", eur_rate);
+
+        // Query USD conversion rate (should be 0.85 based on genesis)
+        let usd_rate = app
+            .query::<GetCurrencyConversionRateRequest, GetCurrencyConversionRateResponse>(
+                "/d.notary.v1.Query/GetCurrencyConversionRate",
+                &GetCurrencyConversionRateRequest {
+                    currency: "USD".to_string(),
+                },
+            )
+            .unwrap()
+            .rate;
+
+        assert!(!usd_rate.is_empty());
+        println!("USD conversion rate: {}", usd_rate);
     }
 
     #[test]

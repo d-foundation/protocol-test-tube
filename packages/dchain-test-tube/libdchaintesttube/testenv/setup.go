@@ -46,6 +46,12 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	depository "github.com/d-foundation/protocol/x/depository"
+	depositorytypes "github.com/d-foundation/protocol/x/depository/types"
+
+	notary "github.com/d-foundation/protocol/x/notary"
+	notarytypes "github.com/d-foundation/protocol/x/notary/types"
 )
 
 func GenesisStateWithValSet(appInstance *app.DChainApp) (map[string]json.RawMessage, secp256k1.PrivKey) {
@@ -201,7 +207,7 @@ func NewDChainApp(nodeHome string) *app.DChainApp {
 	)
 }
 
-func InitChain(appInstance *app.DChainApp) (sdk.Context, secp256k1.PrivKey) {
+func InitChain(appInstance *app.DChainApp, platformAdmin string) (sdk.Context, secp256k1.PrivKey) {
 	sdk.DefaultBondDenom = "udt"
 	genesisState, valPriv := GenesisStateWithValSet(appInstance)
 
@@ -214,6 +220,34 @@ func InitChain(appInstance *app.DChainApp) (sdk.Context, secp256k1.PrivKey) {
 		},
 	}
 	genesisState[wasmtypes.ModuleName] = appInstance.AppCodec().MustMarshalJSON(&wasmGen)
+
+	// Set up depository genesis state with PlatformAdmin if provided
+	if platformAdmin != "" {
+		depositoryParams, err := depositorytypes.NewParams(platformAdmin)
+		requireNoErr(err)
+
+		depositoryGen := depositorytypes.GenesisState{
+			Params:            depositoryParams,
+			Depositories:      []*depositorytypes.Depository{},
+			GlobalNotes:       []*depositorytypes.GlobalNote{},
+			DepositoryCounter: 0,
+		}
+		genesisState[depository.ModuleName] = appInstance.AppCodec().MustMarshalJSON(&depositoryGen)
+	}
+
+	// Set up notary genesis state
+	notaryGen := notarytypes.GenesisState{
+		NextNotaryInfoId: 1,
+		AssetTypeMap:     map[uint64]string{1: "invoice"},
+		CurrencyConversionRates: map[int32]notarytypes.ConversionRate{
+			1: notarytypes.ConversionRate{ConversiontRate: sdkmath.LegacyNewDec(1)},
+			2: notarytypes.ConversionRate{ConversiontRate: sdkmath.LegacyNewDecWithPrec(85, 2)},
+			3: notarytypes.ConversionRate{ConversiontRate: sdkmath.LegacyNewDecWithPrec(87, 2)},
+		},
+		EurPriceInUdt:       sdkmath.LegacyNewDecWithPrec(250000000000000000, 9), // 250_000_000.000000000
+		NotarisationFeeRate: sdkmath.LegacyNewDecWithPrec(1, 2),                  // 0.01
+	}
+	genesisState[notary.ModuleName] = appInstance.AppCodec().MustMarshalJSON(&notaryGen)
 
 	// set staking genesis state
 	stakingGenesisState := stakingtypes.GenesisState{}

@@ -1,8 +1,8 @@
 use dchain_sdk_proto::dchain::notary::v1::{
-    GetNotarisedAssetRequest, GetNotarisedAssetResponse, GetNotaryInfoByIdRequest,
-    GetNotaryInfoByIdResponse, MsgNotarise, MsgNotariseResponse, MsgRegisterNotaryInfo,
-    MsgRegisterNotaryInfoResponse, MsgRemoveNotaryInfo, MsgRemoveNotaryInfoResponse,
-    MsgUpdateAdmin, MsgUpdateAdminResponse, MsgUpdateNotarisedAsset,
+    GetCurrencyConversionRateRequest, GetCurrencyConversionRateResponse, GetNotarisedAssetRequest,
+    GetNotarisedAssetResponse, GetNotaryInfoByIdRequest, GetNotaryInfoByIdResponse, MsgNotarise,
+    MsgNotariseResponse, MsgRegisterNotaryInfo, MsgRegisterNotaryInfoResponse, MsgRemoveNotaryInfo,
+    MsgRemoveNotaryInfoResponse, MsgUpdateAdmin, MsgUpdateAdminResponse, MsgUpdateNotarisedAsset,
     MsgUpdateNotarisedAssetResponse, MsgUpdateVerifierRoutes, MsgUpdateVerifierRoutesResponse,
 };
 use dchain_sdk_proto::traits::TypeUrl;
@@ -13,6 +13,12 @@ use test_tube::runner::Runner;
 
 pub struct Notary<'a, R: Runner<'a>> {
     runner: &'a R,
+}
+
+impl<'a, R: Runner<'a>> super::Module<'a, R> for Notary<'a, R> {
+    fn new(runner: &'a R) -> Self {
+        Notary { runner }
+    }
 }
 
 impl<'a, R> Notary<'a, R>
@@ -49,5 +55,9 @@ where
 
     fn_query! {
         pub get_notary_info_by_id ["/d.notary.v1.Query/GetNotaryInfoById"]: GetNotaryInfoByIdRequest => GetNotaryInfoByIdResponse
+    }
+
+    fn_query! {
+        pub get_conversion_rate ["/d.notary.v1.Query/GetCurrencyConversionRate"]: GetCurrencyConversionRateRequest => GetCurrencyConversionRateResponse
     }
 }

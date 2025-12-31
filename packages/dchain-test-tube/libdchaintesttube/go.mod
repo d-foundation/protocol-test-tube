@@ -19,7 +19,7 @@ require (
 	github.com/cosmos/cosmos-db v1.1.3
 	github.com/cosmos/cosmos-sdk v0.53.4
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/d-foundation/protocol v0.8.2-0.20251219151843-1b6831efe836
+	github.com/d-foundation/protocol v0.8.2-0.20251231081051-e34e5041fba5
 	github.com/pkg/errors v0.9.1
 )
 

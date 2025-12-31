@@ -43,12 +43,21 @@ var (
 
 //export InitTestEnv
 func InitTestEnv() uint64 {
+	return initTestEnvInternal("")
+}
+
+//export InitTestEnvWithPlatformAdmin
+func InitTestEnvWithPlatformAdmin(platformAdmin string) uint64 {
+	return initTestEnvInternal(platformAdmin)
+}
+
+func initTestEnvInternal(platformAdmin string) uint64 {
 	// Temp fix for concurrency issue
 	mu.Lock()
 	defer mu.Unlock()
 
 	// temp: suppress noise from stdout
-	os.Stdout = nil
+	// os.Stdout = nil
 
 	envCounter += 1
 	id := envCounter
@@ -63,7 +72,7 @@ func InitTestEnv() uint64 {
 	env.NodeHome = nodeHome
 	// NOTE: No ParamTypesRegistry for DChain
 
-	ctx, valPriv := testenv.InitChain(env.App)
+	ctx, valPriv := testenv.InitChain(env.App, platformAdmin)
 
 	env.Ctx = ctx
 	env.ValPrivs = []*secp256k1.PrivKey{&valPriv}
