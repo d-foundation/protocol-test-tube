@@ -1,6 +1,6 @@
 use dchain_sdk_proto::{
     dchain::depository::v1::{
-        MsgAddAuthoriseIssuer, MsgAddAuthoriseIssuerResponse, MsgIssuePtWithGlobalNote,
+        MsgAddAuthorizedIssuer, MsgAddAuthorizedIssuerResponse, MsgIssuePtWithGlobalNote,
         MsgIssuePtWithGlobalNoteResponse, MsgRegisterDepository, MsgRegisterDepositoryResponse,
         MsgSurrenderGlobalNote, MsgSurrenderGlobalNoteResponse, QueryGetGlobalNoteByIsinRequest,
         QueryGetGlobalNoteByIsinResponse,
@@ -29,7 +29,7 @@ where
     );
 
     fn_execute! {
-        pub add_authorise_issuer: MsgAddAuthoriseIssuer => MsgAddAuthoriseIssuerResponse
+        pub add_authorise_issuer: MsgAddAuthorizedIssuer => MsgAddAuthorizedIssuerResponse
     }
 
     fn_execute! {
